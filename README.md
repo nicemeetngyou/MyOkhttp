@@ -4,4 +4,5 @@ Okhttp by xlfx
 
 next to do
  1.本地测试
- 2.Sokect 连接池
+ 2.添加重试机制
+ 3.Sokect 连接池
