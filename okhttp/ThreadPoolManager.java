@@ -4,37 +4,41 @@
 package com.xlfx.okhttp;
 
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.DelayQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import android.os.Handler;
+import android.util.Log;
 
 /**
  * @author Administrator
  *
  */
 public class ThreadPoolManager {
- 
-	// µ¥Àı-singleton
+
+	// å•ä¾‹-singleton
 	private static ThreadPoolManager mThreadPoolManager = new ThreadPoolManager();
 
-	// ÈÎÎñ¶ÓÁĞ
-	// ÅÅĞò+ÏÈ½øÏÈ³ö+Éú²ú×ÅÏû·ÑÕßÄ£Ê½
+	// ä»»åŠ¡é˜Ÿåˆ—
+	// æ’åº+å…ˆè¿›å…ˆå‡º+ç”Ÿäº§ç€æ¶ˆè´¹è€…æ¨¡å¼
 	private LinkedBlockingQueue<Runnable> mBlockingQueue = new LinkedBlockingQueue<>();
 
-	// Ïß³Ì³Ø
+	// å»¶è¿Ÿé˜Ÿåˆ— foré‡è¯•
+	private DelayQueue<HttpTask> mDelayQueue = new DelayQueue<>();
+	// çº¿ç¨‹æ± 
 	private ThreadPoolExecutor mThreadPoolExecutor;
 
-	// µ¥Àı
+	// å•ä¾‹
 	public static ThreadPoolManager getInstance() {
 
 		return mThreadPoolManager;
 	}
 
 	/**
-	 * µ¥Àı ¹¹Ôìº¯Êı {@mThreadPoolExecutor} ³õÊ¼»¯
+	 * å•ä¾‹ æ„é€ å‡½æ•° {@mThreadPoolExecutor} åˆå§‹åŒ–
 	 */
 	private ThreadPoolManager() {
 		// TODO Auto-generated constructor stub
@@ -48,17 +52,19 @@ public class ThreadPoolManager {
 					}
 				});
 
-		// Ïß³Ì³Ø¹ÜÀíÀàĞèÒª¹ÜÀíµ÷¶ÈÏß³Ì
+		// çº¿ç¨‹æ± ç®¡ç†ç±»éœ€è¦ç®¡ç†è°ƒåº¦çº¿ç¨‹
 		mThreadPoolExecutor.execute(coreThread);
+		// çº¿ç¨‹æ± ç®¡ç†ç±»éœ€è¦ç®¡ç†é‡è¯•è°ƒåº¦çº¿ç¨‹
+		mThreadPoolExecutor.execute(retryThread);
 	}
 
-	// Ìí¼ÓÍøÂçÇëÇóÈÎÎñµ½¶ÓÁĞÖĞ
+	// æ·»åŠ ç½‘ç»œè¯·æ±‚ä»»åŠ¡åˆ°é˜Ÿåˆ—ä¸­
 	public void addTask(Runnable r) {
 		mBlockingQueue.add(r);
 
 	}
 
-	// ´´½¨µ÷¶ÈÏß³Ì£¬²»¶ÏµØ´Ó¶ÓÁĞÖĞ²éÑ¯ÇëÇó£¬²¢½»¸øÏß³Ì³Ø´¦Àí
+	// åˆ›å»ºè°ƒåº¦çº¿ç¨‹ï¼Œä¸æ–­åœ°ä»é˜Ÿåˆ—ä¸­æŸ¥è¯¢è¯·æ±‚ï¼Œå¹¶äº¤ç»™çº¿ç¨‹æ± å¤„ç†
 	public Runnable coreThread = new Runnable() {
 		Runnable run = null;
 
@@ -72,6 +78,39 @@ public class ThreadPoolManager {
 					// TODO: handle exception
 				}
 				mThreadPoolExecutor.execute(run);
+			}
+
+		}
+	};
+
+	public void addRetryTask(HttpTask httpTask) {
+		if (null != httpTask) {
+			httpTask.setDelayTime(3000);
+			mDelayQueue.offer(httpTask);
+		}
+
+	}
+
+	// åˆ›å»ºé‡è¯•ä»»åŠ¡è°ƒåº¦çº¿ç¨‹
+	public Runnable retryThread = new Runnable() {
+		HttpTask httpTask = null;
+
+		@Override
+		public void run() {
+			while (true) {
+				try {
+					httpTask = mDelayQueue.take();
+					if (3 > httpTask.getRetryCount()) {
+						mThreadPoolExecutor.execute(httpTask);
+						httpTask.setRetryCount(httpTask.getRetryCount() + 1);
+						Log.d("==è¿›å…¥é‡è¯•æœºåˆ¶== ", "" + httpTask.getRetryCount() + System.currentTimeMillis());
+					}else {
+						Log.e("==è¿›å…¥é‡è¯•æœºåˆ¶== ", "é‡è¯•å·²ç»è¶…è¿‡3æ¬¡ï¼æ”¾å¼ƒé‡è¯•ï¼");
+					}
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 
 		}

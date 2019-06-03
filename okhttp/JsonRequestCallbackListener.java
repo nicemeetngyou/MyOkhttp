@@ -22,7 +22,7 @@ public class JsonRequestCallbackListener<T> implements CallbackListener {
 
 	private Class<T> mResponseClass;
 	private IJsonDataListener mJsonDataListener;
-	// ÇĞ»»µ½Android UIÖ÷Ïß³Ì
+	// åˆ‡æ¢åˆ°Android UIä¸»çº¿ç¨‹
 	private Handler mHandler = new Handler(Looper.getMainLooper());
 
 	/**

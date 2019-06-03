@@ -62,55 +62,55 @@ public class JsonRequest implements IhttpRequest {
 
 	@Override
 	public void excute() {
-		// Ö´ĞĞ¾ßÌåµÄÍøÂç·ÃÎÊ²Ù×÷
+		// æ‰§è¡Œå…·ä½“çš„ç½‘ç»œè®¿é—®æ“ä½œ
 
 		URL url = null;
 		try {
 
 			url = new URL(this.mUrl);
-			// ´ò¿ªhttpÁ¬½Ó
+			// æ‰“å¼€httpè¿æ¥
 			mURLConnection = (HttpURLConnection) url.openConnection();
-			// ÉèÖÃÁ¬½Ó³¬Ê±µÄÊ±¼ä
+			// è®¾ç½®è¿æ¥è¶…æ—¶çš„æ—¶é—´
 			mURLConnection.setConnectTimeout(6000);
-			// ÉèÖÃÊÇ·ñÊ¹ÓÃ»º´æ
+			// è®¾ç½®æ˜¯å¦ä½¿ç”¨ç¼“å­˜
 			mURLConnection.setUseCaches(false);
-			// ½ö½ö×÷ÓÃÓÚµ±Ç°º¯Êı£¬ÉèÖÃÕâ¸öÁ´½ÓÊé·ñ¿ÉÒÔ±»ÖØ¶¨Ïò
+			// ä»…ä»…ä½œç”¨äºå½“å‰å‡½æ•°ï¼Œè®¾ç½®è¿™ä¸ªé“¾æ¥ä¹¦å¦å¯ä»¥è¢«é‡å®šå‘
 			mURLConnection.setInstanceFollowRedirects(true);
-			// ÉèÖÃÏìÓ¦³¬Ê±Ê±¼ä
+			// è®¾ç½®å“åº”è¶…æ—¶æ—¶é—´
 			mURLConnection.setReadTimeout(3000);
-			// ÉèÖÃÕâ¸öÁ´½ÓÊÇ·ñ¿ÉÒÔ¶ÁĞ´Êı¾İ
+			// è®¾ç½®è¿™ä¸ªé“¾æ¥æ˜¯å¦å¯ä»¥è¯»å†™æ•°æ®
 			mURLConnection.setDoInput(true);
 			mURLConnection.setDoOutput(true);
-			// ÉèÖÃÇëÇó·½Ê½
+			// è®¾ç½®è¯·æ±‚æ–¹å¼
 			mURLConnection.setRequestMethod("POST");
-			// ÉèÖÃÏûÏ¢ÀàĞÍ
+			// è®¾ç½®æ¶ˆæ¯ç±»å‹
 			mURLConnection.setRequestProperty("Content-Type", "application/json;charset-UTF-8");
-			// ´ÓÉÏÊöÖÁ´ËµÄÅäÖÃ±ØĞëÒªÔÚconnectÖ®Ç°Íê³É£¬Êµ¼ÊÉÏËüÖ»ÊÇ½¨Á¢ÁËÒ»¸öÓë·şÎñÆ÷µÄTCPÁ¬½Ó
-			// ½¨Á¢Á¬½Ó
+			// ä»ä¸Šè¿°è‡³æ­¤çš„é…ç½®å¿…é¡»è¦åœ¨connectä¹‹å‰å®Œæˆï¼Œå®é™…ä¸Šå®ƒåªæ˜¯å»ºç«‹äº†ä¸€ä¸ªä¸æœåŠ¡å™¨çš„TCPè¿æ¥
+			// å»ºç«‹è¿æ¥
 			mURLConnection.connect();
-			// Ê¹ÓÃ×Ö½ÚÁ÷·¢ËÍÊı¾İ
+			// ä½¿ç”¨å­—èŠ‚æµå‘é€æ•°æ®
 			OutputStream outputStream = mURLConnection.getOutputStream();
-			// ½«×Ö½ÚÁ÷°ü×°³É»º³å×Ö½ÚÁ÷
+			// å°†å­—èŠ‚æµåŒ…è£…æˆç¼“å†²å­—èŠ‚æµ
 			BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
-			// °Ñ×Ö½ÚÊı×éµÄÊı¾İĞ´Èë»º³åÇø
+			// æŠŠå­—èŠ‚æ•°ç»„çš„æ•°æ®å†™å…¥ç¼“å†²åŒº
 			bufferedOutputStream.write(mData);
-			// Ë¢ĞÂ»º³åÇø
+			// åˆ·æ–°ç¼“å†²åŒº
 			bufferedOutputStream.flush();
 			outputStream.close();
 			bufferedOutputStream.close();
 
-			// ×Ö·ûÁ÷Ğ´ÈëÊı¾İ
+			// å­—ç¬¦æµå†™å…¥æ•°æ®
 			if (mURLConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
 				InputStream inputStream = mURLConnection.getInputStream();
 				mCallbackListener.onSucess(inputStream);
 
 			} else {
-				throw new RuntimeException("ÇëÇóÊ§°Ü");
+				throw new RuntimeException("è¯·æ±‚å¤±è´¥");
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new RuntimeException("ÇëÇóÊ§°Ü");
+			throw new RuntimeException("è¯·æ±‚å¤±è´¥");
 		} finally {
 			mURLConnection.disconnect();
 		}

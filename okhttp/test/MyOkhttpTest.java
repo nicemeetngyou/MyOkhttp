@@ -62,7 +62,7 @@ public class MyOkhttpTest {
 	}
 
 	private void sendHttpRequest() {
-		// 已经在形参中完成泛型转换
+		// 宸茬粡鍦ㄥ舰鍙備腑瀹屾垚娉涘瀷杞崲
 		HttpUtil.sendJsonRequest(mURL, null, ResponseClass.class, new IJsonDataListener<ResponseClass>() {
 
 			@Override
@@ -78,7 +78,7 @@ public class MyOkhttpTest {
 			}
 
 		});
-		// 常规泛型操作
+		// 甯歌娉涘瀷鎿嶄綔
 		// HttpUtil.sendJsonRequest(mURL, null, ResponseClass.class, new
 		// IJsonDataListener<Object>() {
 		//
